@@ -45,6 +45,31 @@ async function main() {
         });
         // console.log(stocks[0].values)
 
+        // Chart for highestPrice
+        // Unlike the line chart, the labels will be stock symbols, not dates.
+        // Unlike the line chart, you will only need one dataset; 
+        // the data in that dataset will be an array of numbers representing the highest price for each stock.
+        new Chart(highestPriceChartCanvas.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: stocks.map(stock => stock.meta.symbol),  // Had to look up the mockData.js to see where this was coming from.
+                datasets: [{
+                    label: 'Highest',                    
+                    // Was not aware you had to wrap getColor with parenthesis after the arrow => function.
+                    // Now aware that it means implicit return and does not need curly brackets {}.
+                    data: stocks.map(stock => (
+                        getHighest(stock.values)
+                    )),
+                    backgroundColor: stocks.map(stock => (
+                        getColor(stock.meta.symbol)
+                    )),
+                    borderColor: stocks.map(stock => (
+                        getColor(stock.meta.symbol)
+                    )),
+                }]
+            }
+        })
+
 }
 
 function getColor(stock){
@@ -62,5 +87,17 @@ function getColor(stock){
     }
 }
 
+
+// I needed some help figuring this out.  
+// I wasn't sure if I needed an else statement for when iterating and setting the result to become the new defined variable.
+function getHighest(stock) {
+    let highest = 0;
+    stock.forEach(value => {
+        if (parseFloat(value.high) > highest) {
+            highest = value.high
+        }
+    })
+    return highest
+}
 
 main()
